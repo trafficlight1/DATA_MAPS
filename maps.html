@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <title>Google Map API Demo</title>
+    <style>
+      /* Set the height of the map block */
+      #map {
+        height: 900px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Select a Map Style</h1>
+    <!-- Dropdown menu to select map style -->
+    <p>
+      <select id="map-style" onchange="updateMapStyle()">
+        <option value="roadmap">Roadmap</option>
+        <option value="satellite">Satellite</option>
+        <option value="hybrid">Hybrid</option>
+        <option value="terrain">Terrain</option>
+        <option value="custom">Custom JSON</option>
+        <option value="custom_id">Custom mapID</option>
+        <option value="kml">KML Layer</option> <!-- Add option for KML Layer -->
+      </select>
+      <button onclick="updateMapStyle()">Update</button>
+        <button onclick="addKmlLayer()">Add KML Layer</button>
+
+    </p>
+    <!-- Custom map style textarea (hidden by default) -->
+    <div id="custom-map-style" style="display: none">
+      <h2>Enter a Custom Map Style</h2>
+      <textarea id="map-style-text" rows="10"></textarea>
+    </div>
+    <div id="custom-map-style-id" style="display: none">
+      <h2>Enter a Custom Map Style ID</h2>
+      <input id="map-style-id-text" rows="10" />
+    </div>
+    <!-- Google Map API block -->
+    <div id="map" style="margin-top: 2em;"></div>
+    <!-- Load the Google Maps JavaScript API -->
+    <script>
+      var mapStyle = "roadmap"; // Default map style
+      var customMapStyle; // Custom map style object
+      var map;
+      var mapId;
+        var kmlLayer; // Variable to hold KML layer
+
+      // Initialize the map
+      function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 49.839562, lng:  24.029514 },
+          zoom: 13,
+          mapTypeId: mapStyle,
+          mapId: mapId,
+          styles: customMapStyle, // Use custom map style if provided
+        });
+      }
+        
+
+      // Update the map style when the user selects a new option
+      function updateMapStyle() {
+        var selectedStyle = document.getElementById("map-style").value;
+        document.getElementById("custom-map-style").style.display = "none";
+        document.getElementById("custom-map-style-id").style.display = "none";
+
+        if (selectedStyle === "custom") {
+          // Show the custom map style textarea
+          document.getElementById("custom-map-style").style.display = "block";
+          mapStyle = "roadmap"; // Use default style if custom style is invalid
+          // Try to parse the custom map style JSON
+          try {
+            customMapStyle = JSON.parse(
+              document.getElementById("map-style-text").value
+            );
+          } catch (e) {
+            console.log(e);
+          }
+        } else if (selectedStyle == "custom_id") {
+          document.getElementById("custom-map-style-id").style.display =
+            "block";
+          mapStyle = "roadmap"; // Use default style if custom style is invalid
+          // Try to parse the custom map style JSON
+          mapId = document.getElementById("map-style-id-text").value;
+            
+        } else {
+          // Hide the custom map style textarea
+          mapStyle = selectedStyle;
+          customMapStyle = null; // Don't use custom style if not selected
+        }
+        // Reinitialize the map with the new style
+        initMap();
+      }
+        function addKmlLayer() {
+  var kmlUrl = "https://raw.githubusercontent.com/trafficlight1/DATA_MAPS/main/%D0%9A%D0%B0%D1%80%D1%82%D0%B0%20%D0%B4%D0%BE%D1%80%D0%BE%D0%B6%D0%BD%D1%8C%D0%BE%D0%B3%D0%BE%20%D0%BF%D0%BE%D0%BA%D1%80%D0%B8%D1%82%D1%82%D1%8F%20%D0%9B%D1%8C%D0%B2%D0%BE%D0%B2%D0%B0%20(1).kml"; // Replace with the URL to your KML file
+  var kmlLayer = new google.maps.KmlLayer({
+    url: kmlUrl,
+    map: map,
+  });
+}
+
+    </script>
+    <!-- Call the initMap function on load -->
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFrY4fcTmttipaHRxpxXBrddbOjuHD_uA&callback=initMap">
+    </script>
+  </body>
+</html>
